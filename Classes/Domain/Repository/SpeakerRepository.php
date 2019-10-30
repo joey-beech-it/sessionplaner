@@ -31,4 +31,11 @@ class SpeakerRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $result = $query->execute()->getFirst();
         return $result;
     }
+
+    public function findAllFeatured()
+    {
+        $query = $this->createQuery();
+        $query->matching($query->equals('featured', 1));
+        return $query->execute();
+    }
 }

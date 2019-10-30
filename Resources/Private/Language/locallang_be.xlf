@@ -36,6 +36,12 @@
             <trans-unit id="tt_content.list_type_speaker_description" xml:space="preserve">
                 <source>Displays the speakers</source>
             </trans-unit>
+            <trans-unit id="tt_content.list_type_featuredspeaker" xml:space="preserve">
+                <source>Sessionplaner: Featured Speaker</source>
+            </trans-unit>
+            <trans-unit id="tt_content.list_type_speaker_featureddescription" xml:space="preserve">
+                <source>Displays the featured speakers</source>
+            </trans-unit>
             <trans-unit id="sessionplan_flexform.sheet_general" xml:space="preserve">
                 <source>Common settings</source>
             </trans-unit>

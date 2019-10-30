@@ -82,6 +82,7 @@ CREATE TABLE tx_sessionplaner_domain_model_tag
 CREATE TABLE tx_sessionplaner_domain_model_speaker
 (
     name            varchar(255) DEFAULT '' NOT NULL,
+    featured         int(11) unsigned DEFAULT '0' NOT NULL,
     path_segment    varchar(2048),
     bio             text,
     company         varchar(255) DEFAULT '' NOT NULL,

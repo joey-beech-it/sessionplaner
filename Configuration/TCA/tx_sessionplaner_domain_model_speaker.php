@@ -51,6 +51,16 @@ return [
                 'max' => 256,
             ],
         ],
+        'featured' => [
+            'exclude' => 1,
+            'label' => $languageFile . 'tx_sessionplaner_domain_model_speaker-featured',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    ['', 'featured'],
+                ],
+            ]
+        ],
         'path_segment' => [
             'exclude' => false,
             'label' => $languageFile . 'tx_sessionplaner_domain_model_speaker-path_segment',
@@ -180,6 +190,7 @@ return [
             'showitem' => '
                 hidden,
                 name,
+                featured,
                 path_segment,
                 company,
                 bio,

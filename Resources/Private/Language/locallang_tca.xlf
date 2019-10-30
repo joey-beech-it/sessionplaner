@@ -36,6 +36,9 @@
             <trans-unit id="tx_sessionplaner_domain_model_speaker-name" xml:space="preserve">
                 <source>Name</source>
             </trans-unit>
+            <trans-unit id="tx_sessionplaner_domain_model_speaker-featured" xml:space="preserve">
+                <source>Featured</source>
+            </trans-unit>
             <trans-unit id="tx_sessionplaner_domain_model_speaker-company" xml:space="preserve">
                 <source>Company</source>
             </trans-unit>

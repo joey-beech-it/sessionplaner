@@ -41,6 +41,13 @@ class SpeakerController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->view->assign('speakers', $speakers);
     }
 
+    public function listFeaturedAction()
+    {
+        $speakers = $this->speakerRepository->findAllFeatured();
+
+        $this->view->assign('speakers', $speakers);
+    }
+
     public function showAction(Speaker $speaker)
     {
         $provider = GeneralUtility::makeInstance(SpeakerTitleTagProvider::class);

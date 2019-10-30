@@ -75,3 +75,20 @@ $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['sessionplane
     'sessionplaner_speaker',
     'FILE:EXT:sessionplaner/Configuration/FlexForms/Speaker.xml'
 );
+
+/**
+ * Frontend Plugin FeaturedSpeaker
+ */
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+    'sessionplaner',
+    'Featuredspeaker',
+    'LLL:EXT:sessionplaner/Resources/Private/Language/locallang_be.xlf:tt_content.list_type_featuredspeaker',
+    'sessionplaner-plugin-featuredspeaker'
+);
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['sessionplaner_featuredspeaker'] =
+    'layout, select_key';
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['sessionplaner_featuredspeaker'] = 'pi_flexform';
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
+    'sessionplaner_featuredspeaker',
+    'FILE:EXT:sessionplaner/Configuration/FlexForms/FeaturedSpeaker.xml'
+);

@@ -95,6 +95,17 @@ call_user_func(function () {
     );
 
     /**
+     * Configure Speaker Frontend Plugin
+     */
+    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+        $extensionName,
+        'Featuredspeaker',
+        [
+            $speakerController => 'listFeatured, show',
+        ]
+    );
+
+    /**
      * Configure Suggest Frontend Plugin
      */
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
