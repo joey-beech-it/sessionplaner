@@ -91,10 +91,10 @@ call_user_func(function () {
      * Configure Speaker Frontend Plugin
      */
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-        $extensionName,
+        'Sessionplaner',
         'Featuredspeaker',
         [
-            $speakerController => 'listFeatured, show',
+            \Evoweb\Sessionplaner\Controller\SpeakerController::class => 'listFeatured, show',
         ]
     );
 
