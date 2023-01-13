@@ -1,44 +1,41 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\Controller;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
+namespace Evoweb\Sessionplaner\Controller;
+
 use Evoweb\Sessionplaner\Domain\Model\Speaker;
+use Evoweb\Sessionplaner\Domain\Repository\SpeakerRepository;
 use Evoweb\Sessionplaner\TitleTagProvider\SpeakerTitleTagProvider;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-class SpeakerController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class SpeakerController extends ActionController
 {
-    /**
-     * @var \Evoweb\Sessionplaner\Domain\Repository\SpeakerRepository
-     */
-    protected $speakerRepository;
+    protected SpeakerRepository $speakerRepository;
 
-    /**
-     * @param \Evoweb\Sessionplaner\Domain\Repository\SpeakerRepository $speakerRepository
-     */
-    public function injectSpeakerRepository(
-        \Evoweb\Sessionplaner\Domain\Repository\SpeakerRepository $speakerRepository
-    ) {
+    public function __construct(SpeakerRepository $speakerRepository)
+    {
         $this->speakerRepository = $speakerRepository;
     }
 
-    public function listAction()
+    public function listAction(): ResponseInterface
     {
         $speakers = $this->speakerRepository->findAll();
 
         $this->view->assign('speakers', $speakers);
+
+        return new HtmlResponse($this->view->render());
     }
 
     public function listFeaturedAction()
@@ -48,11 +45,13 @@ class SpeakerController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $this->view->assign('speakers', $speakers);
     }
 
-    public function showAction(Speaker $speaker)
+    public function showAction(Speaker $speaker): ResponseInterface
     {
+        /** @var SpeakerTitleTagProvider $provider */
         $provider = GeneralUtility::makeInstance(SpeakerTitleTagProvider::class);
         $provider->setTitle($speaker->getName());
 
+        /** @var MetaTagManagerRegistry $metaTagRegistry */
         $metaTagRegistry = GeneralUtility::makeInstance(MetaTagManagerRegistry::class);
 
         $ogMetaTagManager = $metaTagRegistry->getManagerForProperty('og:title');
@@ -62,5 +61,7 @@ class SpeakerController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $twitterMetaTagManager->addProperty('twitter:title', $speaker->getName());
 
         $this->view->assign('speaker', $speaker);
+
+        return new HtmlResponse($this->view->render());
     }
 }

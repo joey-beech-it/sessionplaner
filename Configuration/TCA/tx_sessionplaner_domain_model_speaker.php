@@ -1,15 +1,13 @@
 <?php
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
+
+defined('TYPO3') or die();
 
 $languageFile = 'LLL:EXT:sessionplaner/Resources/Private/Language/locallang_tca.xlf:';
 
@@ -30,13 +28,10 @@ return [
             'default' => 'sessionplaner-record-speaker'
         ],
     ],
-    'interface' => [
-        'showRecordFieldList' => 'name'
-    ],
     'columns' => [
         'hidden' => [
             'exclude' => false,
-            'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
             ],

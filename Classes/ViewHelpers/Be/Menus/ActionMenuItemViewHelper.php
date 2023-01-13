@@ -1,17 +1,18 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\ViewHelpers\Be\Menus;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
+
+namespace Evoweb\Sessionplaner\ViewHelpers\Be\Menus;
+
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemViewHelper as FluidActionMenuItemViewHelper;
 
 /**
  * View helper which returns an option tag.
@@ -41,16 +42,13 @@ namespace Evoweb\Sessionplaner\ViewHelpers\Be\Menus;
  * localized select element
  * <output>
  */
-class ActionMenuItemViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemViewHelper
+class ActionMenuItemViewHelper extends FluidActionMenuItemViewHelper
 {
     /**
      * @var \TYPO3\CMS\Fluid\Core\Rendering\RenderingContext
      */
     protected $renderingContext;
 
-    /**
-     * Initialize arguments.
-     */
     public function initializeArguments()
     {
         parent::initializeArguments();
@@ -70,41 +68,58 @@ class ActionMenuItemViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\Act
         $controller = $this->arguments['controller'];
         $action = $this->arguments['action'];
         $arguments = $this->arguments['arguments'];
+
         $current = $this->arguments['current'];
         $currentArgumentKey = $this->arguments['currentArgumentKey'];
 
-        /** @var \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder $uriBuilder */
         $uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
+        $uriBuilder->setRequest($this->renderingContext->getRequest());
+
         $uri = $uriBuilder->reset()->uriFor($action, $arguments, $controller);
         $this->tag->addAttribute('value', $uri);
-        if ($this->isSelected($controller, $action, $arguments, $current, $currentArgumentKey)) {
-            $this->tag->addAttribute('selected', 'selected');
+
+        if (!$this->tag->hasAttribute('selected')) {
+            $this->isSelected($controller, $action, $arguments, $current, $currentArgumentKey);
         }
-        $this->tag->setContent($label);
+
+        $this->tag->setContent(
+            // Double encode can be set to true, once the typo3fluid/fluid fix is released and required
+            htmlspecialchars($label, ENT_QUOTES, null, false)
+        );
         return $this->tag->render();
     }
 
-    /**
-     * @param string $controller
-     * @param string $action
-     * @param array $arguments
-     * @param string $current
-     * @param string $currentArgumentKey
-     *
-     * @return bool
-     */
-    public function isSelected($controller, $action, $arguments, $current, $currentArgumentKey)
-    {
+    public function isSelected(
+        string $controller,
+        string $action,
+        array $arguments,
+        int $current,
+        string $currentArgumentKey
+    ) {
+        $result = false;
         if ($current === '' && $currentArgumentKey === '') {
-            $currentRequest = $this->renderingContext->getControllerContext()->getRequest();
-            $currentController = $currentRequest->getControllerName();
-            $currentAction = $currentRequest->getControllerActionName();
-
-            $result = ($action === $currentAction && $controller === $currentController);
+            $currentRequest = $this->renderingContext->getRequest();
+            $flatRequestArguments = ArrayUtility::flatten(
+                array_merge([
+                    'controller' => $currentRequest->getControllerName(),
+                    'action' => $currentRequest->getControllerActionName()
+                ], $currentRequest->getArguments())
+            );
+            $flatViewHelperArguments = ArrayUtility::flatten(
+                array_merge(['controller' => $controller, 'action' => $action], $arguments)
+            );
+            if (
+                $this->arguments['selected'] ||
+                array_diff($flatRequestArguments, $flatViewHelperArguments) === []
+            ) {
+                $result = true;
+            }
         } else {
             $result = ($current == $arguments[$currentArgumentKey]);
         }
 
-        return $result;
+        if ($result) {
+            $this->tag->addAttribute('selected', 'selected');
+        }
     }
 }

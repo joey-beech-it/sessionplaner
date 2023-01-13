@@ -1,0 +1,111 @@
+name: build
+
+on:
+  push:
+    branches: [ develop, master ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  xliff:
+    runs-on: ubuntu-latest
+    name: "Xliff linter"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: "Run the xliff lint"
+        uses: TYPO3-Continuous-Integration/TYPO3-CI-Xliff-Lint@v1
+
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        typo3: ['^11', '^12']
+        php: ['7.4', '8.0', '8.1']
+        mysql: ['5.7', '8.0']
+        exclude:
+          - typo3: '^11'
+            mysql: '8.0'
+          - typo3: '^12'
+            mysql: '5.7'
+          - typo3: '^12'
+            php: '7.4'
+          - typo3: '^12'
+            php: '8.0'
+
+    name: Tests on TYPO3 ${{ matrix.typo3 }} with PHP${{ matrix.php }}
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v3
+
+      - id: setup_mysql
+        name: Set up MySQL ${{ matrix.mysql }}
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql version: ${{ matrix.mysql }}
+          mysql root password: 'root'
+
+      - id: setup_php
+        name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer
+          extensions: pdo, sqlite3
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Composer Cache Vars
+        id: composer-cache-vars
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +"%s")" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache-vars.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.typo3 }}-${{ steps.composer-cache-vars.outputs.timestamp }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.typo3 }}-
+            ${{ runner.os }}-composer-${{ matrix.php }}-
+            ${{ runner.os }}-composer-
+
+      - id: install
+        name: Install
+        run: |
+          composer require typo3/cms-core:${{ matrix.typo3 }} --no-progress
+          git checkout composer.json
+
+      - id: lint
+        name: Lint
+        if: ${{ always() && steps.install.conclusion == 'success' }}
+        run: |
+          composer test:php:lint
+
+      - id: cgl
+        name: CGL
+        if: ${{ always() && steps.install.conclusion == 'success' }}
+        run: |
+          composer cgl:ci
+
+  TERUpload:
+    needs: [ xliff, build ]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    name: TYPO3 TER release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Publish to TER
+        uses: tomasnorre/typo3-upload-ter@v2
+        with:
+          api-token: ${{ secrets.TYPO3_API_TOKEN }}

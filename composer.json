@@ -1,44 +1,67 @@
 {
-    "name": "evoweb/sessionplaner",
-    "type": "typo3-cms-extension",
-    "description": "Sessionplaner for TYPO3Camps",
-    "homepage": "https://github.com/evoWeb/sessionplaner/",
-
-    "license": "GPL-2.0-or-later",
-
-    "support": {
-        "issues": "https://github.com/evoWeb/sessionplaner/issues"
-    },
-    "keywords": [
-        "sessionplaner",
-        "barcamp",
-        "TYPO3Camps"
-    ],
-    "require": {
-        "typo3/cms-core": "^9.5 || ^10.0"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.13"
-    },
-    "autoload": {
-        "psr-4": {
-            "Evoweb\\Sessionplaner\\": "Classes/"
-        }
-    },
-
-    "config": {
-        "vendor-dir": ".Build/vendor",
-        "bin-dir": ".Build/bin"
-    },
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "sessionplaner",
-            "cms-package-dir": "{$vendor-dir}/typo3/cms",
-            "web-dir": ".Build/Web"
-        }
-    },
-
-    "scripts": {
-        "post-autoload-dump": "mkdir -p .Build/Web/typo3conf/ext/ && ln -snf ../../../.. .Build/Web/typo3conf/ext/sessionplaner"
-    }
+	"name": "evoweb/sessionplaner",
+	"type": "typo3-cms-extension",
+	"description": "Sessionplaner for TYPO3Camps",
+	"homepage": "https://github.com/evoWeb/sessionplaner/",
+	"license": "GPL-2.0-or-later",
+	"support": {
+		"docs": "https://docs.typo3.org/p/evoweb/sessionplaner/master/en-us/",
+		"issues": "https://github.com/evoWeb/sessionplaner/issues"
+	},
+	"keywords": [
+		"sessionplaner",
+		"barcamp",
+		"TYPO3Camps"
+	],
+	"require": {
+		"typo3/cms-core": "^11.5 || 12.*.*@dev",
+		"typo3/cms-extbase": "^11.5 || 12.*.*@dev",
+		"typo3/cms-fluid": "^11.5 || 12.*.*@dev",
+		"typo3/cms-form": "^11.5 || 12.*.*@dev"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^3.13",
+		"overtrue/phplint": "^3.2 || ^4.3 || ^5.3",
+		"typo3/testing-framework": "7.x-dev"
+	},
+	"autoload": {
+		"psr-4": {
+			"Evoweb\\Sessionplaner\\": "Classes/"
+		}
+	},
+	"config": {
+		"vendor-dir": ".Build/Web/vendor",
+		"allow-plugins": {
+			"typo3/class-alias-loader": true,
+			"typo3/cms-composer-installers": true
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "sessionplaner",
+			"cms-package-dir": "{$vendor-dir}/typo3/cms",
+			"web-dir": ".Build/Web"
+		}
+	},
+	"prefer-stable": true,
+	"scripts": {
+		"post-autoload-dump": "mkdir -p .Build/Web/typo3conf/ext/ && ln -snf ../../../.. .Build/Web/typo3conf/ext/sessionplaner",
+		"cgl": [
+			"php-cs-fixer --diff -v fix"
+		],
+		"cgl:ci": [
+			"php-cs-fixer --diff -v --dry-run fix"
+		],
+		"test:php:lint": [
+			"phplint"
+		],
+		"prepare-release": [
+			"rm -rf .Build",
+			"rm -rf .github",
+			"rm .editorconfig",
+			"rm .gitattributes",
+			"rm .gitignore",
+			"sed -i \"s/version' => '.*'/version' => '$(echo ${GITHUB_REF} | cut -d / -f 3)'/\" ext_emconf.php\n"
+		]
+	}
 }

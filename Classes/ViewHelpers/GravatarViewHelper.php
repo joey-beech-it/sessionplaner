@@ -1,19 +1,19 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\ViewHelpers;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
-class GravatarViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper
+namespace Evoweb\Sessionplaner\ViewHelpers;
+
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+
+class GravatarViewHelper extends AbstractTagBasedViewHelper
 {
     /**
      * @var string
@@ -25,7 +25,7 @@ class GravatarViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBa
         parent::initializeArguments();
         $this->registerUniversalTagAttributes();
         $this->registerArgument('email', 'string', 'Email address', true);
-        $this->registerArgument('size', 'integer', '[ 1 - 2048 ]');
+        $this->registerArgument('size', 'int', '[ 1 - 2048 ]');
         $this->registerArgument('default', 'string', '[ 404 | mm | identicon | monsterid | wavatar ]');
         $this->registerArgument('rating', 'string', '[ g | pg | r | x ]');
     }
@@ -46,8 +46,8 @@ class GravatarViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBa
             . '&r=' . $rating;
 
         $this->tag->addAttribute('src', $avatarUrl);
-        $this->tag->addAttribute('width', (int) $size);
-        $this->tag->addAttribute('height', (int) $size);
+        $this->tag->addAttribute('width', (int)$size);
+        $this->tag->addAttribute('height', (int)$size);
         return $this->tag->render();
     }
 }

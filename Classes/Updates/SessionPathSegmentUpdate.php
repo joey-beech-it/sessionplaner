@@ -1,19 +1,18 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\Updates;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
+namespace Evoweb\Sessionplaner\Updates;
+
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
@@ -26,43 +25,25 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  */
 class SessionPathSegmentUpdate implements UpgradeWizardInterface
 {
-    /**
-     * @var string
-     */
-    protected $table = 'tx_sessionplaner_domain_model_session';
+    protected string $table = 'tx_sessionplaner_domain_model_session';
 
-    /**
-     * @var string
-     */
-    protected $slugField = 'path_segment';
+    protected string $slugField = 'path_segment';
 
-    /**
-    * @return string
-    */
     public function getIdentifier(): string
     {
         return self::class;
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return '[EXT:sessionplaner] Generate Path-Segments for Sessions';
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return '';
     }
 
-    /**
-     * @return array
-     */
     public function getPrerequisites(): array
     {
         return [
@@ -70,13 +51,12 @@ class SessionPathSegmentUpdate implements UpgradeWizardInterface
         ];
     }
 
-    /**
-     * @return bool
-     */
     public function updateNecessary(): bool
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        /** @var DeletedRestriction $deleteRestriction */
+        $deleteRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
+        $queryBuilder = $this->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeAll()->add($deleteRestriction);
 
         $elementCount = $queryBuilder
             ->count('uid')
@@ -87,14 +67,12 @@ class SessionPathSegmentUpdate implements UpgradeWizardInterface
                     $queryBuilder->expr()->isNull($this->slugField)
                 )
             )
-            ->execute()->fetchColumn(0);
+            ->execute()
+            ->fetchOne();
 
         return (bool)$elementCount;
     }
 
-    /**
-     * @return bool
-     */
     public function executeUpdate(): bool
     {
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($this->table);
@@ -147,5 +125,12 @@ class SessionPathSegmentUpdate implements UpgradeWizardInterface
         }
 
         return true;
+    }
+
+    protected function getQueryBuilderForTable(string $table): QueryBuilder
+    {
+        /** @var ConnectionPool $pool */
+        $pool = GeneralUtility::makeInstance(ConnectionPool::class);
+        return $pool->getQueryBuilderForTable($table);
     }
 }

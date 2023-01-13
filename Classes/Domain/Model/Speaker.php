@@ -1,174 +1,190 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\Domain\Model;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
+namespace Evoweb\Sessionplaner\Domain\Model;
+
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-class Speaker extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Speaker extends AbstractSlugEntity
 {
-    /**
-     * @var string
-     */
-    protected $name = '';
+    protected string $slugField = 'path_segment';
+
+    protected string $tablename = 'tx_sessionplaner_domain_model_speaker';
+
+    protected bool $hidden = false;
+
+    protected string $name = '';
+
+    protected string $bio = '';
+
+    protected string $company = '';
+
+    protected string $website = '';
+
+    protected string $twitter = '';
+
+    protected string $linkedin = '';
+
+    protected string $xing = '';
+
+    protected string $email = '';
+
+    protected ?FileReference $picture = null;
 
     /**
-     * @var string
-     */
-    protected $bio = '';
-
-    /**
-     * @var string
-     */
-    protected $company = '';
-
-    /**
-     * @var string
-     */
-    protected $website = '';
-
-    /**
-     * @var string
-     */
-    protected $twitter = '';
-
-    /**
-     * @var string
-     */
-    protected $linkedin = '';
-
-    /**
-     * @var string
-     */
-    protected $xing = '';
-
-    /**
-     * @var string
-     */
-    protected $email = '';
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Domain\Model\FileReference
-     */
-    protected $picture;
-
-    /**
+     * @var ObjectStorage<Session>
      * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\Evoweb\Sessionplaner\Domain\Model\Session>
      */
-    protected $sessions;
+    protected ObjectStorage $sessions;
 
-    /**
-     * @var int
-     */
-    protected $detailPage;
+    protected int $detailPage = 0;
+
+    protected string $pathSegment = '';
+
+    public function __construct()
+    {
+        $this->initializeObject();
+    }
 
     public function initializeObject()
     {
-        $this->sessions = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectStorage::class);
+        $this->sessions =  new ObjectStorage();
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function setHidden(bool $hidden)
+    {
+        $this->hidden = $hidden;
+    }
+
+    public function getHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    public function setPathSegment(string $pathSegment)
+    {
+        $this->pathSegment = $pathSegment;
+    }
+
+    public function getPathSegment(): string
+    {
+        return $this->pathSegment;
+    }
+
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
-     */
-    public function getSessions()
+    public function getSessions(): ObjectStorage
     {
         return $this->sessions;
     }
 
-    /**
-     * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $sessions
-     */
-    public function setSessions(ObjectStorage $sessions): void
+    public function setSessions(ObjectStorage $sessions)
     {
         $this->sessions = $sessions;
     }
 
-    /**
-     * @return string
-     */
+    public function setCompany(string $company)
+    {
+        $this->company = $company;
+    }
+
     public function getCompany(): string
     {
         return $this->company;
     }
 
-    /**
-     * @return string
-     */
+    public function setWebsite(string $website)
+    {
+        $this->website = $website;
+    }
+
     public function getWebsite(): string
     {
         return $this->website;
     }
 
-    /**
-     * @return string
-     */
+    public function setTwitter(string $twitter)
+    {
+        $this->twitter = $twitter;
+    }
+
     public function getTwitter(): string
     {
         return $this->twitter;
     }
 
-    /**
-     * @return string
-     */
+    public function setLinkedin(string $linkedin)
+    {
+        $this->linkedin = $linkedin;
+    }
+
     public function getLinkedin(): string
     {
         return $this->linkedin;
     }
 
-    /**
-     * @return string
-     */
+    public function setXing(string $xing)
+    {
+        $this->xing = $xing;
+    }
+
     public function getXing(): string
     {
         return $this->xing;
     }
 
-    /**
-     * @return string
-     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+    }
+
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @return \TYPO3\CMS\Extbase\Domain\Model\FileReference $logo
-     */
-    public function getPicture()
+    public function setPicture(FileReference $picture)
+    {
+        $this->picture = $picture;
+    }
+
+    public function getPicture(): ?FileReference
     {
         return $this->picture;
     }
 
-    /**
-     * @return int
-     */
+    public function setDetailPage(int $detailPage)
+    {
+        $this->detailPage = $detailPage;
+    }
+
     public function getDetailPage(): int
     {
         return $this->detailPage;
     }
 
-    /**
-     * @return string
-     */
+    public function setBio(string $bio)
+    {
+        $this->bio = $bio;
+    }
+
     public function getBio(): string
     {
         return $this->bio;

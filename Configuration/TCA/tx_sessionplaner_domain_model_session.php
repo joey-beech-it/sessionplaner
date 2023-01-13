@@ -1,15 +1,13 @@
 <?php
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
+
+defined('TYPO3') or die();
 
 $languageFile = 'LLL:EXT:sessionplaner/Resources/Private/Language/locallang_tca.xlf:';
 
@@ -30,13 +28,10 @@ return [
             'default' => 'sessionplaner-record-session'
         ],
     ],
-    'interface' => [
-        'showRecordFieldList' => 'name'
-    ],
     'columns' => [
         'hidden' => [
             'exclude' => false,
-            'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
             ],
@@ -144,7 +139,6 @@ return [
                 'rows' => 15,
                 'softref' => 'typolink_tag,images,email[subst],url',
                 'enableRichtext' => true,
-                'richtextConfiguration' => 'default'
             ],
         ],
         'documents' => [
@@ -162,15 +156,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'items' => [
-                    [$languageFile . 'notassigned', 0],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-talk', 1],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-tutorial', 2],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-workshop', 3],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-wish', 6],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-other', 4],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-type-break', 5],
-                ],
+                'items' => array_merge([['', 0]], \Evoweb\Sessionplaner\Enum\SessionTypeEnum::getTcaOptions()),
                 'minitems' => 0,
                 'maxitems' => 1,
             ],
@@ -181,12 +167,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'items' => [
-                    [$languageFile . 'notassigned', 0],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-level-starter', 1],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-level-advanced', 2],
-                    [$languageFile . 'tx_sessionplaner_domain_model_session-level-pro', 3],
-                ],
+                'items' => array_merge([['', 0]], \Evoweb\Sessionplaner\Enum\SessionLevelEnum::getTcaOptions()),
                 'minitems' => 0,
                 'maxitems' => 1,
                 'default' => 0,

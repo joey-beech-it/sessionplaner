@@ -1,32 +1,33 @@
 <?php
-declare(strict_types = 1);
-namespace Evoweb\Sessionplaner\Domain\Repository;
+
+declare(strict_types=1);
 
 /*
- * This file is part of the package evoweb\sessionplaner.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package evoweb/sessionplaner.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
+namespace Evoweb\Sessionplaner\Domain\Repository;
+
 use Evoweb\Sessionplaner\Domain\Model\Day;
 use Evoweb\Sessionplaner\Domain\Model\Session;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Extbase\Persistence\Repository;
 
-class SessionRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class SessionRepository extends Repository
 {
     /**
      * Default Orderings
      */
     protected $defaultOrderings = [
-        'topic' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+        'topic' => QueryInterface::ORDER_ASCENDING
     ];
 
-    public function findAnyByUid(int $uid): Session
+    public function findAnyByUid(int $uid): ?Session
     {
         $query = $this->createQuery();
         $query->getQuerySettings()
@@ -78,24 +79,21 @@ class SessionRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         return $query->execute();
     }
 
-    public function findByDayAndHasSlotHasRoom(string $days): array
+    public function findByDayAndHasSlotHasRoom(string $days): QueryResultInterface
     {
-        $days = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $days, true);
-        if (is_array($days) && count($days) > 0) {
-            $query = $this->createQuery();
-
-            $result = $query->matching(
-                $query->logicalAnd(
-                    [
-                        $query->in('day', $days),
-                        $query->logicalNot($query->equals('slot', 0)),
-                        $query->logicalNot($query->equals('room', 0))
-                    ]
-                )
-            )->execute(true);
-        } else {
-            $result = [];
+        $days = GeneralUtility::intExplode(',', $days, true);
+        if (empty($days)) {
+            $days = [-1];
         }
-        return $result;
+        $query = $this->createQuery();
+        return $query->matching(
+            $query->logicalAnd(
+                [
+                    $query->in('day', $days),
+                    $query->logicalNot($query->equals('slot', 0)),
+                    $query->logicalNot($query->equals('room', 0))
+                ]
+            )
+        )->execute();
     }
 }
